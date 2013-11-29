@@ -28,5 +28,6 @@ public class ImageSlider {
         slider = new SliderImpl();
         frame.add((Component) slider);
         frame.validate();
+        
     }
 }

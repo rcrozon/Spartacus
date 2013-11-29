@@ -62,14 +62,15 @@ public class SlideAnimation implements Animation {
   SpecialPanel animationPanel = null;
   private AnimationListener listener = null;
   boolean direction = true;
-  int       animationDuration = 2000;
+  int       animationDuration = 300;
+  private final int DURATION = 300;
 
   public void setDirection(boolean direction){
     this.direction = direction;
   }
 
   public void setAnimationDuration(int animationDuration){
-    this.animationDuration = (animationDuration < 1000)?1000:animationDuration;
+    this.animationDuration = DURATION;//(animationDuration < animationDuration)?animationDuration:animationDuration;
   }
 
 
@@ -114,7 +115,7 @@ public class SlideAnimation implements Animation {
   public float endAngle = 360;
 
   float deltaAngle = 0.5f;
-  float effectTime = 2000;
+  float effectTime = 200;
   long dt = Math.round(effectTime* deltaAngle/180);
   int counter = 0;
   long totalDrawTime = 0;
@@ -138,8 +139,8 @@ public class SlideAnimation implements Animation {
       }
 
       public void setAnimationDuration(int animationDuration){
-        effectTime = (animationDuration < 1000)?1000:animationDuration;
-        dt = Math.round(effectTime* deltaAngle/180);
+          effectTime = DURATION;
+          dt = Math.round(effectTime* deltaAngle/180);
       }
 
       void startThread(float val1,float val2){

@@ -33,7 +33,7 @@ public class Reflection extends JComponent {
     @Override
     public void paintComponent(Graphics g) {
         if (this.selected){
-            gradientColor = Color.gray;
+            gradientColor = new Color(34, 118, 221);
         }else{
             gradientColor = Color.black;
         }
@@ -47,7 +47,7 @@ public class Reflection extends JComponent {
         float fadeHeight = 0.3f;
         Color[] colors = {gradientColor, Color.black};
         float[] dist = {0.0f, 0.9f};
-        g2d.setPaint(new RadialGradientPaint(65, 75, 80, 65, 75,dist, colors, CycleMethod.NO_CYCLE));
+        g2d.setPaint(new RadialGradientPaint(65, 120, 80, 65, 120,dist, colors, CycleMethod.NO_CYCLE));
         g2d.fillRect(0, 0, width, height);
         g2d.translate((width - imageWidth) / 2, height / 2 - imageHeight);
         g2d.drawRenderedImage(image, null);

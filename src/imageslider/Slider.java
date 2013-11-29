@@ -4,13 +4,14 @@
  */
 package imageslider;
 
+import java.awt.event.KeyListener;
 import java.awt.event.MouseListener;
 
 /**
  *
  * @author Romain
  */
-public interface Slider extends MouseListener{
+public interface Slider extends MouseListener, KeyListener{
     
     
 }
