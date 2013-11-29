@@ -4,10 +4,7 @@
  */
 package Console;
 
-import imageslider.Slider;
-import imageslider.SliderImpl;
 import java.awt.Color;
-import java.awt.Component;
 import javax.swing.JFrame;
 
 /**

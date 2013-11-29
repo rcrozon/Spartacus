@@ -10,6 +10,6 @@ import java.awt.event.ActionListener;
  *
  * @author Romain
  */
-public interface PilotageMode extends ActionListener{
+public interface PilotageMode {
     
 }

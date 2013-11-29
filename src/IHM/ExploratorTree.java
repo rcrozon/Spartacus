@@ -92,10 +92,6 @@ public class ExploratorTree extends JScrollPane implements MouseListener {
                             FileItem item = (FileItem)node.getUserObject();
                             if (!item.getFile().isDirectory()){
                                 Spartacus.client.setPanelCenter(panelCenter);
-                                if (PanelBackground.isPCSelected)
-                                    Spartacus.client.setIPAdress("192.168.0.10");
-                                else
-                                    Spartacus.client.setIPAdress("192.168.0.13");
                                 Spartacus.client.sendFile(item.getFile());
                                 XMLWriter writer = new XMLWriter();
                                 writer.addToHistory(item);

@@ -28,14 +28,14 @@ import java.util.logging.Logger;
 public class Client {
     
     private int                     port                   = 8000;
-    private final String            ADRESS_HACKBERRY      = "192.168.0.13";
+    private final String            ADRESS_HACKBERRY      = "192.168.0.10";
     private String                  adress                = ADRESS_HACKBERRY;
     private Socket                  socket                 ;
     private final int               BUFFER_SIZE            = 1024;
     private PanelCenter             panelCenter;
     
     public Client() throws UnknownHostException{
-        this("192.168.0.13", 8000);
+        this("192.168.0.10", 8000);
     }
     
     public Client(String adress, int port) throws UnknownHostException{
@@ -47,37 +47,72 @@ public class Client {
         this.adress = adress;
     }
     
-    public void sendFile(final File src) throws Exception {
+    public BufferedOutputStream prepareToSend(final String mode){
+        BufferedOutputStream bos = null;
+        try {
+            byte[] bMode = mode.getBytes();
+            socket = new Socket(adress, port);
+            //panelCenter.setProgressBarFile(src);
+            //ECRIRE SUR LA SOCKET
+            bos = new BufferedOutputStream(socket.getOutputStream());
+            /////////////////////////////////////
+            bos.write(bMode);
+            bos.flush();
+        } catch (UnknownHostException ex) {
+            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return bos;
+    }
+    
+    public void sendCommand(final String command ){
+        Thread threadSending = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    BufferedOutputStream bos = prepareToSend("0");
+                    byte[] bCommand = new byte[56];
+                    System.err.println("command" + command);
+                    byte[] srcBytes = command.getBytes();
+                    for (int i = 0; i < srcBytes.length ; ++i){
+                        bCommand[i] = srcBytes[i];
+                    }
+                    bos.write(bCommand);
+                    bos.flush();
+                } catch (IOException ex) {
+                    Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });    
+        threadSending.start();
+    }
+    
+    public void sendFile(final File src) {
         Thread threadSending = new Thread(new Runnable() {
             @Override
             public void run() {
                 if(src.exists()) { 
-                    byte[] fileName = new byte[1024];
-                    byte[] srcBytes = new String("NAME" + src.getName() + "NAME").getBytes();
+                    BufferedOutputStream bos = prepareToSend("1");
+                    byte[] buffer   = new byte[BUFFER_SIZE];
+                    byte[] fileName = new byte[BUFFER_SIZE];
+                    byte[] srcBytes = new String(src.getName()).getBytes();
                     for (int i = 0; i < srcBytes.length ; ++i){
                         fileName[i] = srcBytes[i];
                     }
-                    try {
-                        socket = new Socket(adress, port);
-                        long len = src.length();
-                        panelCenter.setProgressBarFile(src);
-                        long i = 0;
-                        BufferedInputStream bis =null;
-                        try{
-                            //OUVERTURE EN LECTURE DU FICHIER A ENVOYER
-                            bis =new BufferedInputStream(new FileInputStream(src));
-                        //EXCEPTION NON GERE
-                        }catch(FileNotFoundException e){}
-                        //ECRIRE SUR LA SOCKET
-                        BufferedOutputStream bos =new BufferedOutputStream(socket.getOutputStream());
-                        byte buffer[] =new byte[BUFFER_SIZE];
+                    long len = src.length();                
+                    long i = 0;
+                    BufferedInputStream bis =null;
+                    try{
                         //ENVOIE DU NOM DE FICHIER
                         bos.write(fileName);
                         bos.flush();
                         //ENVOIE DU FICHIER
+                        //OUVERTURE EN LECTURE DU FICHIER A ENVOYER
+                        bis = new BufferedInputStream(new FileInputStream(src));
                         while(bis.read(buffer, 0, BUFFER_SIZE) != -1){
                             i += BUFFER_SIZE;
-                            panelCenter.updateClient(i);
+                            //panelCenter.updateClient(i);
                             bos.write(buffer, 0, BUFFER_SIZE);
                             bos.flush();
                         }
@@ -86,22 +121,22 @@ public class Client {
                         bos.close();
                         socket.close();
                         //EXCEPTION NON GéRéeS
-                     
+
                     } catch (ConnectException ex) {
                         InfoDialog infoDialog = new InfoDialog(ex);
                     } catch (UnknownHostException ex) {
                         Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
-                    } catch (NullPointerException ex){}
-                    catch (IOException ex) {
+                    } catch (NullPointerException ex){
+                        Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+                    }catch (IOException ex) {
                         Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
                     }
-                    
                 }
             }
         });
         threadSending.start();
-    } 
-
+    }
+    
     public boolean isClosed() {
         if (socket == null)
             return true;
@@ -114,4 +149,5 @@ public class Client {
     public void setPanelCenter(PanelCenter panelCenter) {
         this.panelCenter = panelCenter;
     }
+    
 }
